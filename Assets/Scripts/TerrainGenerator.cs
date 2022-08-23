@@ -1,22 +1,25 @@
-using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(ObjectPool))]
 public class TerrainGenerator : MonoBehaviour
 {
-    [SerializeField] private int maxTerrainCount = 30;
-    [SerializeField] private List<GameObject> terrains = new List<GameObject>();
+    [SerializeField] private int maxTerrainCount;
+    [SerializeField] private GameObject terrainPref;
 
-    // TODO cambiar a un sistema de pool (por suerte ya tengo uno armado xD)
-    private Queue<GameObject> terrainsQueue = new Queue<GameObject>();
+    private ObjectPool pool;
     private Vector3 currentPosition = Vector3.zero;
 
     private void Start()
     {
-        Random.InitState(Mathf.RoundToInt(Time.time));
+        pool = GetComponent<ObjectPool>();
+        pool.InitPool(terrainPref, maxTerrainCount);
 
-        for (int i = 0; i < maxTerrainCount; i++)
+        for (int i = 0; i < pool.Size; i++)
         {
-            SpawnTerrain();
+            GameObject temp = pool.GetFromPool();
+            temp.transform.localPosition = currentPosition;
+            pool.ReturnToPool(temp, true);
+            currentPosition.z++;
         }
     }
 
@@ -30,14 +33,9 @@ public class TerrainGenerator : MonoBehaviour
 
     private void SpawnTerrain()
     {
-        GameObject terrain = Instantiate(terrains[Random.Range(0, terrains.Count)], currentPosition, Quaternion.identity);
-        terrainsQueue.Enqueue(terrain);
-        
-        if(terrainsQueue.Count > maxTerrainCount)
-        {
-            GameObject temp = terrainsQueue.Dequeue();
-            Destroy(temp);
-        }
+        GameObject terrainTile = pool.GetFromPool();
+        terrainTile.transform.localPosition = currentPosition;
+        pool.ReturnToPool(terrainTile, true);
         currentPosition.z++;
     }
 }
