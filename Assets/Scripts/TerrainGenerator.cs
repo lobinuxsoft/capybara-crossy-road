@@ -11,6 +11,7 @@ public class TerrainGenerator : MonoBehaviour
 
     private void Start()
     {
+        PlayerMovement.OnJump += CheckSpawnTerrain;
         pool = GetComponent<ObjectPool>();
         pool.InitPool(terrainPref, maxTerrainCount);
 
@@ -23,19 +24,19 @@ public class TerrainGenerator : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            SpawnTerrain();
-        }
-    }
-
     private void SpawnTerrain()
     {
         GameObject terrainTile = pool.GetFromPool();
         terrainTile.transform.localPosition = currentPosition;
         pool.ReturnToPool(terrainTile, true);
         currentPosition.z++;
+    }
+
+    void CheckSpawnTerrain(int playerZ)
+    {
+        if(transform.GetChild(transform.childCount-1).position.z - playerZ < maxTerrainCount / 2)
+        {
+            SpawnTerrain();
+        }
     }
 }

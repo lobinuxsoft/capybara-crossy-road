@@ -37,6 +37,7 @@ public class ObjectPool : MonoBehaviour
     /// <param name="obj"></param>
     public void ReturnToPool(GameObject obj, bool active = false)
     {
+        obj.transform.SetAsLastSibling();
         obj.SetActive(active);
         pool.Enqueue(obj);
     }
