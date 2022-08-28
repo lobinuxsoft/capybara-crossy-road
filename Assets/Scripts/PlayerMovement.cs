@@ -1,15 +1,17 @@
 #if UNITY_EDITOR
+using UnityEngine.SceneManagement;
 using UnityEditor;
 #endif
 
 using UnityEngine;
 using System;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] float jumpHeigh = .5f;
+    [SerializeField] Vector3 applyForce = new Vector3(0, 4f, 1.25f);
 
     Rigidbody rb;
     Vector3 viewDir = Vector3.forward;
@@ -20,6 +22,12 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.constraints = RigidbodyConstraints.FreezeRotation;
+
+#if UNITY_EDITOR
+        CreateSceneParameters sceneParameters = new CreateSceneParameters(LocalPhysicsMode.Physics3D);
+        scenePrediction = SceneManager.CreateScene($"Simulation {gameObject.GetHashCode()}", sceneParameters);
+        scenePredictionPhysics = scenePrediction.GetPhysicsScene();
+#endif
     }
 
     public void JumpToDirection(InputAction.CallbackContext context)
@@ -32,73 +40,69 @@ public class PlayerMovement : MonoBehaviour
 
             transform.rotation = Quaternion.LookRotation(viewDir, transform.up);
 
-            rb.velocity = CalculateJumpData(viewDir, jumpHeigh, Physics.gravity.y).initialVelocity;
+#if UNITY_EDITOR
+            JumpSimulation(transform, applyForce);
+#endif
 
-            OnJump((int)rb.transform.position.z);
-        }
-    }
+            rb.AddForce((transform.forward * applyForce.z + transform.up * applyForce.y) * 10, ForceMode.Impulse);
 
-    private JumpData CalculateJumpData(Vector3 direction, float heigh,float gravity)
-    {
-        Vector3 targetPos = transform.position + direction;
-
-        float displacementY = targetPos.y - transform.position.y;
-        Vector3 displacementXZ = new Vector3(targetPos.x - transform.position.x, 0, targetPos.z - transform.position.z);
-
-        float time = Mathf.Sqrt(-2 * heigh / gravity) + Mathf.Sqrt(2 * (displacementY - heigh) / gravity);
-
-        Vector3 velocityY = Vector3.up * Mathf.Sqrt(-2 * gravity * heigh);
-        Vector3 velocityXZ = displacementXZ / time;
-
-        return new JumpData(velocityXZ + velocityY * -Mathf.Sign(gravity), time);
-    }
-
-    struct JumpData
-    {
-        public readonly Vector3 initialVelocity;
-        public readonly float timeToTarget;
-
-        public JumpData(Vector3 initialVelocity, float timeToTarget)
-        {
-            this.initialVelocity = initialVelocity;
-            this.timeToTarget = timeToTarget;
+            OnJump((int)rb.position.z);
         }
     }
 
 #if UNITY_EDITOR
 
-    [SerializeField] float circleSize = .25f;
+    private Scene scenePrediction;
+    private PhysicsScene scenePredictionPhysics;
+
+    [Header("Physics simulation (Editor Only)")]
+    [SerializeField] int maxSteps = 40;
+    [SerializeField] Color gizmosColor = Color.yellow;
+    List<Vector3> positions = new List<Vector3>();
+
+    private void JumpSimulation(in Transform objRef, Vector3 force)
+    {
+        if (!scenePredictionPhysics.IsValid())
+            return;
+
+        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        cube.transform.position = objRef.position;
+        cube.transform.rotation = objRef.rotation;
+        cube.transform.localScale = objRef.localScale;
+
+        SceneManager.MoveGameObjectToScene(cube, scenePrediction);
+        cube.AddComponent<Rigidbody>().AddForce(cube.transform.forward * force.z + cube.transform.up * force.y, ForceMode.Impulse);
+
+        positions.Clear();
+
+        for (int i = 0; i < maxSteps; i++)
+        {
+            scenePredictionPhysics.Simulate(Time.fixedDeltaTime);
+
+            positions.Add(cube.transform.position);
+        }
+
+        Destroy(cube);
+    }
 
     private void OnDrawGizmos()
     {
-        if (rb != null && rb.IsSleeping())
+        Handles.ArrowHandleCap(
+                                0,
+                                transform.position,
+                                Quaternion.LookRotation(transform.forward * applyForce.z + transform.up * applyForce.y, transform.up),
+                                1,
+                                EventType.Repaint
+                              );
+
+        if (positions.Count > 0)
         {
-            DrawPath();
-        }
-    }
+            Handles.color = gizmosColor;
 
-    private void DrawPath()
-    {
-        JumpData jumpData = CalculateJumpData(viewDir, jumpHeigh, Physics.gravity.y);
-
-        Vector3 previousDrawPoint = transform.position;
-        Vector3 targetPos = transform.position + viewDir;
-
-        Handles.color = Color.blue;
-        Handles.DrawWireDisc(transform.position, Vector3.up, circleSize);
-
-        Handles.color = Color.green;
-        Handles.DrawWireDisc(targetPos, Vector3.up, circleSize);
-
-        int resolution = 30;
-        for (int i = 0; i <= resolution; i++)
-        {
-            float simulationTime = i / (float)resolution * jumpData.timeToTarget;
-            Vector3 displacement = jumpData.initialVelocity * simulationTime + Physics.gravity * simulationTime * simulationTime / 2f;
-            Vector3 drawPoint = transform.position + displacement;
-            Handles.color = Color.yellow;
-            Handles.DrawLine(previousDrawPoint, drawPoint);
-            previousDrawPoint = drawPoint;
+            foreach (var pos in positions)
+            {
+                Handles.SphereHandleCap(0, pos, Quaternion.identity, .05f, EventType.Repaint);
+            }
         }
     }
 #endif
