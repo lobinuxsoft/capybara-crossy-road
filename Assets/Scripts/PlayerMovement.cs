@@ -9,7 +9,7 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] float jumpHeigh = 2;
+    [SerializeField] float jumpHeigh = .5f;
 
     Rigidbody rb;
     Vector3 viewDir = Vector3.forward;
@@ -66,6 +66,9 @@ public class PlayerMovement : MonoBehaviour
     }
 
 #if UNITY_EDITOR
+
+    [SerializeField] float circleSize = .25f;
+
     private void OnDrawGizmos()
     {
         if (rb != null && rb.IsSleeping())
@@ -82,10 +85,10 @@ public class PlayerMovement : MonoBehaviour
         Vector3 targetPos = transform.position + viewDir;
 
         Handles.color = Color.blue;
-        Handles.DrawWireDisc(transform.position, Vector3.up, .5f);
+        Handles.DrawWireDisc(transform.position, Vector3.up, circleSize);
 
         Handles.color = Color.green;
-        Handles.DrawWireDisc(targetPos, Vector3.up, .5f);
+        Handles.DrawWireDisc(targetPos, Vector3.up, circleSize);
 
         int resolution = 30;
         for (int i = 0; i <= resolution; i++)
