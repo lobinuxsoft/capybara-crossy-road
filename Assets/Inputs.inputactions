@@ -2,7 +2,79 @@
     "name": "Inputs",
     "maps": [
         {
-            "name": "Player",
+            "name": "Player1",
+            "id": "afce8bf4-98a1-42d4-9e28-a2ea4c3a5709",
+            "actions": [
+                {
+                    "name": "Move",
+                    "type": "Value",
+                    "id": "6c956c53-47de-4243-9763-86ca4b72f2a7",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "Tap",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "2D Vector",
+                    "id": "8c1f9705-dc63-4bd6-bf6b-e7516c9d4a90",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "95afe9a6-082b-4360-8005-a7fb44092591",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "d9e2d532-67de-42e4-ae5b-947850e779e0",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "9c044d6d-9cf6-4285-a6bd-ea727607abd2",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "cda2323f-1815-4d28-8a48-510c7889563e",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                }
+            ]
+        },
+        {
+            "name": "Player2",
             "id": "9dde8028-f6d1-47c0-8f73-e26fba80a5b4",
             "actions": [
                 {
@@ -30,7 +102,7 @@
                 {
                     "name": "up",
                     "id": "179266f6-3179-44b2-af5d-d5ff47899d5c",
-                    "path": "<Keyboard>/w",
+                    "path": "<Keyboard>/upArrow",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -41,7 +113,7 @@
                 {
                     "name": "down",
                     "id": "8538da52-bc1e-435a-bb0c-4f722d562390",
-                    "path": "<Keyboard>/s",
+                    "path": "<Keyboard>/downArrow",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -52,7 +124,7 @@
                 {
                     "name": "left",
                     "id": "6bfa68d5-713e-4754-9551-1f3fa26c9162",
-                    "path": "<Keyboard>/a",
+                    "path": "<Keyboard>/leftArrow",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -63,7 +135,7 @@
                 {
                     "name": "right",
                     "id": "1b289d67-3636-45df-b931-1ef8b0bdb75e",
-                    "path": "<Keyboard>/d",
+                    "path": "<Keyboard>/rightArrow",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
