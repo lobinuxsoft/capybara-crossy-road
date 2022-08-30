@@ -12,7 +12,6 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody rb;
     GroundDetector groundDetector;
     Vector3 viewDir = Vector3.forward;
-    bool centre = true;
 
     public static Action<int> OnJump;
 
@@ -24,20 +23,9 @@ public class PlayerMovement : MonoBehaviour
         groundDetector = GetComponent<GroundDetector>();
     }
 
-    private void FixedUpdate()
-    {
-        if(!centre && groundDetector.OnGround)
-        {
-            rb.MovePosition(new Vector3(Mathf.Ceil(rb.position.x), rb.position.y, Mathf.Ceil(rb.position.z)));
-            centre = true;
-        }
-    }
-
     public void JumpToDirection(InputAction.CallbackContext context)
     {
         if (!context.performed || !groundDetector.OnGround) return;
-
-        centre = false;
 
         Vector2 input = context.ReadValue<Vector2>();
 
@@ -80,7 +68,7 @@ public class PlayerMovement : MonoBehaviour
         while (lerp < duration)
         {
             lerp += Time.deltaTime;
-            Vector3 XZ = Vector3.Lerp(startPosition, destination, lerp / duration);
+            Vector3 XZ = Vector3.Lerp(startPosition, destination, Mathf.Clamp01(lerp / duration));
             XZ.y = destHeight + jumpHeightBehaviour.Evaluate(lerp / duration);
 
             rb.MovePosition(XZ);
@@ -88,6 +76,6 @@ public class PlayerMovement : MonoBehaviour
             yield return null;
         }
 
-        //rb.MovePosition(destination);
+        rb.MovePosition(destination);
     }
 }
