@@ -32,11 +32,27 @@ public class PlayerMovement : MonoBehaviour
 
     public void JumpToDirection(InputAction.CallbackContext context)
     {
+        if (!context.performed) return;
+
         Vector2 input = context.ReadValue<Vector2>();
 
-        if (input.magnitude > 0)
+        if (input.sqrMagnitude > 0)
         {
             viewDir = new Vector3(input.x, 0, input.y);
+
+            transform.rotation = Quaternion.LookRotation(viewDir, transform.up);
+
+#if UNITY_EDITOR
+            JumpSimulation(transform, applyForce);
+#endif
+
+            rb.AddForce((transform.forward * applyForce.z + transform.up * applyForce.y) * 10, ForceMode.Impulse);
+
+            OnJump((int)rb.position.z);
+        }
+        else
+        {
+            viewDir = new Vector3(0, 0, 1);
 
             transform.rotation = Quaternion.LookRotation(viewDir, transform.up);
 
