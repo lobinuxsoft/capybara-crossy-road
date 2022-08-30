@@ -29,7 +29,7 @@
                     "name": "2D Vector",
                     "id": "8c1f9705-dc63-4bd6-bf6b-e7516c9d4a90",
                     "path": "2DVector",
-                    "interactions": "Tap",
+                    "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "MoveP1",
