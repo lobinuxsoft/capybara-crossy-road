@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2896185728374899405}
   - component: {fileID: 2896185728374899406}
   - component: {fileID: 2896185728374899407}
+  - component: {fileID: 4941338294814037868}
   - component: {fileID: 2896185728374899400}
   - component: {fileID: 2896185728374899395}
   - component: {fileID: 2896185728374899394}
@@ -100,6 +101,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4941338294814037868
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2896185728374899401}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4af402b628557754ebbcc5f6425820fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxGroundAngle: 25
 --- !u!114 &2896185728374899400
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -112,9 +126,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3713fcaa7bccef84198bb1c308b20048, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  applyForce: {x: 0, y: 2, z: 2.575}
-  maxSteps: 20
-  gizmosColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  jumpDuration: 0.25
+  jumpHeightBehaviour:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.5
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!54 &2896185728374899395
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -158,10 +203,6 @@ MonoBehaviour:
       m_Calls: []
   m_ActionEvents:
   - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 3817e001-2977-43ab-ad2a-3ec72542c117
-    m_ActionName: Player/Move[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]
-  - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2896185728374899400}
         m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
@@ -177,8 +218,12 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 6c956c53-47de-4243-9763-86ca4b72f2a7
     m_ActionName: Player1/Move[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 97b7268b-f722-4585-8a44-6de3a580c016
+    m_ActionName: Players/MoveP2[/Keyboard/upArrow,/Keyboard/downArrow,/Keyboard/leftArrow,/Keyboard/rightArrow,/XInputControllerWindows/rightStick]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
-  m_DefaultActionMap: Player1
+  m_DefaultActionMap: Players
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
