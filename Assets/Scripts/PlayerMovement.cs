@@ -7,7 +7,7 @@ using System.Collections;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] float jumpDuration = 1;
-    [SerializeField] AnimationCurve jumpHeighBehaviour;
+    [SerializeField] AnimationCurve jumpHeightBehaviour;
 
     Rigidbody rb;
     GroundDetector groundDetector;
@@ -74,16 +74,20 @@ public class PlayerMovement : MonoBehaviour
     IEnumerator JumpRoutine(Vector3 destination, float duration)
     {
         float lerp = 0;
-        float destHigh = destination.y;
+        float destHeight = destination.y;
+        Vector3 startPosition = rb.position;
 
         while (lerp < duration)
         {
-            lerp += Time.fixedDeltaTime;
-            destination.y = destHigh + jumpHeighBehaviour.Evaluate(lerp / duration);
-            rb.MovePosition(Vector3.Lerp(rb.position, destination, lerp / duration));
+            lerp += Time.deltaTime;
+            Vector3 XZ = Vector3.Lerp(startPosition, destination, lerp / duration);
+            XZ.y = destHeight + jumpHeightBehaviour.Evaluate(lerp / duration);
+
+            rb.MovePosition(XZ);
+
             yield return null;
         }
 
-        rb.MovePosition(destination);
+        //rb.MovePosition(destination);
     }
 }
