@@ -1,12 +1,11 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SlowMotionBehaviour : PowerUp
 {
     private void Start()
     {
-        Time.timeScale = 0.5f;
+        Time.timeScale = 0.1f;
         StartCoroutine(StartCountdown());
     }
 
