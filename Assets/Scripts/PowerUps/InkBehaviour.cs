@@ -22,7 +22,7 @@ public class InkBehaviour : PowerUp
         float time = 0;
         while (time < 5)
         {
-            time += Time.unscaledDeltaTime;
+            time += Time.deltaTime;
             yield return null;
         }
         vig.intensity.value = 0;

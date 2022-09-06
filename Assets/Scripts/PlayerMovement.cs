@@ -6,12 +6,35 @@ using System.Collections;
 [RequireComponent(typeof(Rigidbody), typeof(GroundDetector))]
 public class PlayerMovement : MonoBehaviour
 {
+    [SerializeField] InputActionReference moveAction;
     [SerializeField] float jumpDuration = 1;
     [SerializeField] AnimationCurve jumpHeightBehaviour;
-
+    
     Rigidbody rb;
     GroundDetector groundDetector;
     Vector3 viewDir = Vector3.forward;
+
+    private bool slowMotion;
+    
+    public InputActionReference MoveAction
+    {
+        get
+        {
+            return moveAction;
+        }
+    }
+
+    public bool SlowMotion
+    {
+        get
+        {
+            return slowMotion;
+        }
+        set
+        {
+            slowMotion = value;
+        }
+    }
 
     public static Action<int> OnJump;
 
@@ -21,7 +44,27 @@ public class PlayerMovement : MonoBehaviour
         rb.constraints = RigidbodyConstraints.FreezeRotation;
 
         groundDetector = GetComponent<GroundDetector>();
+
+        moveAction.action.performed += JumpToDirection;
+        moveAction.action.Enable();
     }
+
+    private void OnDestroy()
+    {
+        moveAction.action.Disable();
+        moveAction.action.performed -= JumpToDirection;
+    }
+
+    public void SubscribeToAction()
+    {
+        moveAction.action.performed += JumpToDirection;
+    }
+
+    public void UnsubscribeToAction()
+    {
+        moveAction.action.performed -= JumpToDirection;
+    }
+
 
     public void JumpToDirection(InputAction.CallbackContext context)
     {
@@ -67,7 +110,7 @@ public class PlayerMovement : MonoBehaviour
 
         while (lerp < duration)
         {
-            lerp += Time.deltaTime;
+            lerp += slowMotion ? Time.deltaTime : Time.unscaledDeltaTime;
             Vector3 XZ = Vector3.Lerp(startPosition, destination, Mathf.Clamp01(lerp / duration));
             XZ.y = destHeight + jumpHeightBehaviour.Evaluate(lerp / duration);
 

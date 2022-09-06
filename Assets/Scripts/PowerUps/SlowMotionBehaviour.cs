@@ -6,6 +6,7 @@ public class SlowMotionBehaviour : PowerUp
     private void Start()
     {
         Time.timeScale = 0.1f;
+        user.GetComponent<PlayerMovement>().SlowMotion = true;
         StartCoroutine(StartCountdown());
     }
 
@@ -18,6 +19,7 @@ public class SlowMotionBehaviour : PowerUp
             yield return null;
         }
         Time.timeScale = 1;
+        user.GetComponent<PlayerMovement>().SlowMotion = false;
         Destroy(this);
     }
 }
