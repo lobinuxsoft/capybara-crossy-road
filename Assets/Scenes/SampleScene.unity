@@ -294,7 +294,7 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 1000
-  field of view: 35.87471
+  field of view: 31.304005
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -873,21 +873,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3964403630743099256, guid: 01217ab7af7281945b273b36555433c6,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 6042a061776f1f84bacc5632ac3cdedb, type: 2}
     - target: {fileID: 6198467708912395674, guid: 01217ab7af7281945b273b36555433c6,
         type: 3}
       propertyPath: m_Name
       value: Players
       objectReference: {fileID: 0}
-    - target: {fileID: 6519376121903642507, guid: 01217ab7af7281945b273b36555433c6,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 0ae06dd0c6fc1a04489372979f7abb59, type: 2}
     - target: {fileID: 7766005629799635770, guid: 01217ab7af7281945b273b36555433c6,
         type: 3}
       propertyPath: m_DefaultControlScheme
@@ -1301,7 +1291,7 @@ MonoBehaviour:
     ModeOverride: 2
     LensShift: {x: 0, y: 0}
     GateFit: 1
-    m_SensorSize: {x: 0.4864865, y: 1}
+    m_SensorSize: {x: 0.5620642, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
