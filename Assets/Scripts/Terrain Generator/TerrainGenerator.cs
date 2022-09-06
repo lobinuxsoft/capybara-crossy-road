@@ -4,7 +4,9 @@ using UnityEngine;
 public class TerrainGenerator : MonoBehaviour
 {
     [SerializeField] private int maxTerrainCount;
-    [SerializeField] private GameObject terrainPref;
+    [SerializeField] private int tileWidth = 20;
+    [SerializeField] private TileGenerator terrainPref;
+    [SerializeField] TileData tileData;
 
     private ObjectPool pool;
     private Vector3 currentPosition = Vector3.zero;
@@ -12,13 +14,22 @@ public class TerrainGenerator : MonoBehaviour
     private void Start()
     {
         PlayerMovement.OnJump += CheckSpawnTerrain;
+
         pool = GetComponent<ObjectPool>();
-        pool.InitPool(terrainPref, maxTerrainCount);
+        pool.InitPool(terrainPref.gameObject, maxTerrainCount);
 
         for (int i = 0; i < pool.Size; i++)
         {
             GameObject temp = pool.GetFromPool();
             temp.transform.localPosition = currentPosition;
+
+            if(temp.TryGetComponent(out TileGenerator tileGenerator))
+            {
+                tileGenerator.TileWidth = tileWidth;
+                tileGenerator.TileData = tileData;
+                StartCoroutine(tileGenerator.GenerateTile());
+            }
+
             pool.ReturnToPool(temp, true);
             currentPosition.z++;
         }
@@ -26,9 +37,17 @@ public class TerrainGenerator : MonoBehaviour
 
     private void SpawnTerrain()
     {
-        GameObject terrainTile = pool.GetFromPool();
-        terrainTile.transform.localPosition = currentPosition;
-        pool.ReturnToPool(terrainTile, true);
+        GameObject temp = pool.GetFromPool();
+        temp.transform.localPosition = currentPosition;
+
+        if (temp.TryGetComponent(out TileGenerator tileGenerator))
+        {
+            tileGenerator.TileWidth = tileWidth;
+            tileGenerator.TileData = tileData;
+            StartCoroutine(tileGenerator.GenerateTile());
+        }
+
+        pool.ReturnToPool(temp, true);
         currentPosition.z++;
     }
 

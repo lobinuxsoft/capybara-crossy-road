@@ -84,7 +84,7 @@ public class PlayerMovement : MonoBehaviour
 
             StartCoroutine(JumpRoutine(destination, jumpDuration));
 
-            OnJump((int)rb.position.z);
+            OnJump?.Invoke((int)rb.position.z);
         }
         else
         {
@@ -98,7 +98,7 @@ public class PlayerMovement : MonoBehaviour
 
             StartCoroutine(JumpRoutine(destination, jumpDuration));
 
-            OnJump((int)rb.position.z);
+            OnJump?.Invoke((int)rb.position.z);
         }
     }
 
