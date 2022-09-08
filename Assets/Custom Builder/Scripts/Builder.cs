@@ -12,7 +12,6 @@ namespace Utilities.Builder
 
     public class Builder : ScriptableObject
     {
-
         public string ProjectName = default;
         public BaseBuildConfiguration[] ReleaseBuilds = default;
         public BaseBuildConfiguration[] MajorBuilds = default;
@@ -27,7 +26,21 @@ namespace Utilities.Builder
         [HideInInspector] public bool useGlobalDefineSymbols = default;
         [HideInInspector][SerializeField] private string[] globalDefineSymbols = default;
 
-        static List<string> buildLogs = new List<string>();
+
+        [HideInInspector] public Color logColor = Color.white;
+        [HideInInspector] public Color warnningColor = Color.yellow;
+        [HideInInspector] public Color errorColor = Color.red;
+        [HideInInspector] public Color assertColor = Color.red + Color.yellow;
+        [HideInInspector] public Color exceptionColor = Color.magenta;
+        [HideInInspector] public Color stackTraceColor = Color.cyan;
+
+        List<LogStruct> buildLogs = new List<LogStruct>();
+
+        public List<LogStruct> BuildLogs
+        {
+            get => buildLogs;
+            set => buildLogs = value;
+        }
 
         public int ReleaseVersion => releaseVersion;
         public int MajorPatchVersion => majorPatchVersion;
@@ -36,12 +49,16 @@ namespace Utilities.Builder
 
         public bool Building { get; private set; }
 
+        public int callbackOrder => throw new System.NotImplementedException();
+
         public string GetReleaseFolderName() => ProjectName + " " + (releaseVersion + 1).ToString() + ".0.0";
         public string GetMajorFolderName() => ProjectName + " " + releaseVersion + "." + (majorPatchVersion + 1).ToString() + ".0";
         public string GetMinorFolderName() => ProjectName + " " + releaseVersion + "." + majorPatchVersion + "." + (minorPatchVersion + 1).ToString();
 
         public void BuildAllReleaseBuilds(string[] levels, string path) 
         {
+            Application.logMessageReceived += OnLogMessageReceived;
+
             BuildTarget currentBuildTarget = EditorUserBuildSettings.activeBuildTarget;
 
             Building = true;
@@ -59,21 +76,15 @@ namespace Utilities.Builder
             bundleVersion = PlayerSettings.Android.bundleVersionCode;
             Building = false;
 
-            if( EditorUserBuildSettings.SwitchActiveBuildTarget(BuildPipeline.GetBuildTargetGroup(currentBuildTarget), currentBuildTarget))
-            {
-                Debug.ClearDeveloperConsole();
+            EditorUserBuildSettings.SwitchActiveBuildTarget(BuildPipeline.GetBuildTargetGroup(currentBuildTarget), currentBuildTarget);
 
-                foreach (var log in buildLogs)
-                {
-                    Debug.Log(log);
-                }
-
-                buildLogs.Clear();
-            }
+            Application.logMessageReceived -= OnLogMessageReceived;
         }
 
         public void BuildAllMajorBuilds(string[] levels, string path)
         {
+            Application.logMessageReceived += OnLogMessageReceived;
+
             BuildTarget currentBuildTarget = EditorUserBuildSettings.activeBuildTarget;
 
             Building = true;
@@ -90,21 +101,15 @@ namespace Utilities.Builder
             bundleVersion = PlayerSettings.Android.bundleVersionCode;
             Building = false;
 
-            if (EditorUserBuildSettings.SwitchActiveBuildTarget(BuildPipeline.GetBuildTargetGroup(currentBuildTarget), currentBuildTarget))
-            {
-                Debug.ClearDeveloperConsole();
+            EditorUserBuildSettings.SwitchActiveBuildTarget(BuildPipeline.GetBuildTargetGroup(currentBuildTarget), currentBuildTarget);
 
-                foreach (var log in buildLogs)
-                {
-                    Debug.Log(log);
-                }
-
-                buildLogs.Clear();
-            }
+            Application.logMessageReceived -= OnLogMessageReceived;
         }
 
         public void BuildAllMinorBuilds(string[] levels, string path)
         {
+            Application.logMessageReceived += OnLogMessageReceived;
+
             BuildTarget currentBuildTarget = EditorUserBuildSettings.activeBuildTarget;
 
             Building = true;
@@ -120,17 +125,9 @@ namespace Utilities.Builder
             bundleVersion = PlayerSettings.Android.bundleVersionCode;
             Building = false;
 
-            if (EditorUserBuildSettings.SwitchActiveBuildTarget(BuildPipeline.GetBuildTargetGroup(currentBuildTarget), currentBuildTarget))
-            {
-                Debug.ClearDeveloperConsole();
+            EditorUserBuildSettings.SwitchActiveBuildTarget(BuildPipeline.GetBuildTargetGroup(currentBuildTarget), currentBuildTarget);
 
-                foreach (var log in buildLogs)
-                {
-                    Debug.Log(log);
-                }
-
-                buildLogs.Clear();
-            }
+            Application.logMessageReceived -= OnLogMessageReceived;
         }
 
         private void BuildConfigurationTask(BaseBuildConfiguration config, string[] levels, string path, string gameName) 
@@ -157,25 +154,14 @@ namespace Utilities.Builder
             }
         }
 
-        private static void BuildGame(string[] levels, string path, string gameName, BuildTarget target, BuildOptions options)
+        private void BuildGame(string[] levels, string path, string gameName, BuildTarget target, BuildOptions options)
         {
             UnityEditor.Build.Reporting.BuildReport report = BuildPipeline.BuildPlayer(levels, path + "/" + gameName, target, options);
+        }
 
-            switch (report.summary.result)
-            {
-                case UnityEditor.Build.Reporting.BuildResult.Unknown:
-                    buildLogs.Add($"Platform: {report.summary.platform}, Unknown... <color=red>Errors: {report.summary.totalErrors}</color>, <color=yellow>Warnings: {report.summary.totalWarnings}</color>");
-                    break;
-                case UnityEditor.Build.Reporting.BuildResult.Succeeded:
-                    buildLogs.Add($"<color=green>Platform: {report.summary.platform}, Build size: {report.summary.totalSize} bytes</color>");
-                    break;
-                case UnityEditor.Build.Reporting.BuildResult.Failed:
-                    buildLogs.Add($"<color=red>Platform: {report.summary.platform}, Errors: {report.summary.totalErrors}</color>");
-                    break;
-                case UnityEditor.Build.Reporting.BuildResult.Cancelled:
-                    buildLogs.Add($"Platform: {report.summary.platform}, Canceled!");
-                    break;
-            }
+        private void OnLogMessageReceived(string condition, string stackTrace, LogType type)
+        {
+            buildLogs.Add(new LogStruct { logType = type, condition = condition, stackTrace = stackTrace });
         }
 
         private List<string> GetCurrentDefines()

@@ -3,17 +3,36 @@
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
-using System;
 
 namespace Utilities.Builder
 {
     [CustomEditor(typeof(Builder))]
     public class BuilderEditor : Editor
     {
+        bool editLogColors;
+        GUIStyle labelStyle;
+        GUIStyle textStyle;
+        GUIStyle boxStyle;
+
+        Vector2 scrollPos;
 
         private Builder builder = default;
 
-        private void OnEnable() => builder = (Builder)target;
+        private void OnEnable()
+        {
+            builder = (Builder)target;
+
+            labelStyle = new GUIStyle(EditorGUIUtility.GetBuiltinSkin(EditorSkin.Scene).label);
+            labelStyle.richText = true;
+            labelStyle.wordWrap = true;
+
+            textStyle = new GUIStyle(EditorGUIUtility.GetBuiltinSkin(EditorSkin.Scene).textArea);
+            textStyle.richText = true;
+
+            boxStyle = new GUIStyle(EditorGUIUtility.GetBuiltinSkin(EditorSkin.Scene).box);
+            boxStyle.richText = true;
+        }
+        
 
         public override void OnInspectorGUI()
         {
@@ -68,6 +87,8 @@ namespace Utilities.Builder
             if (GUILayout.Button("Build Release Version"))
             {
 
+                builder.BuildLogs.Clear();
+
                 var path = EditorUtility.SaveFilePanel("Builds Locations", "", builder.GetReleaseFolderName(), "");
 
                 if (path.Length == 0) return;
@@ -80,19 +101,20 @@ namespace Utilities.Builder
 
             if (GUILayout.Button("Build Major Version"))
             {
+                builder.BuildLogs.Clear();
 
                 var path = EditorUtility.SaveFilePanel("Builds Locations", "", builder.GetMajorFolderName(), "");
 
                 if (path.Length == 0) return;
 
                 builder.BuildAllMajorBuilds(GetAllCurrentScenes(), path);
-
             }
 
             GUILayout.Space(10);
 
             if (GUILayout.Button("Build Minor Version"))
             {
+                builder.BuildLogs.Clear();
 
                 var path = EditorUtility.SaveFilePanel("Builds Locations", "", builder.GetMinorFolderName(), "");
 
@@ -100,8 +122,56 @@ namespace Utilities.Builder
 
                 builder.BuildAllMinorBuilds(GetAllCurrentScenes(), path);
             }
+
+            if(builder.BuildLogs.Count > 0)
+            {
+                GUILayout.Space(20);
+
+                GUILayout.Label("<b>Build Logs</b>", boxStyle);
+                EditorGUILayout.Separator();
+                editLogColors = EditorGUILayout.ToggleLeft("Edit Log Colors?", editLogColors);
+                
+
+                if (editLogColors)
+                {
+                    EditorGUILayout.Separator();
+                    builder.logColor = EditorGUILayout.ColorField("Log Color", builder.logColor, GUILayout.ExpandWidth(false));
+                    builder.warnningColor = EditorGUILayout.ColorField("Warnning Color", builder.warnningColor, GUILayout.ExpandWidth(false));
+                    builder.errorColor = EditorGUILayout.ColorField("Error Color", builder.errorColor, GUILayout.ExpandWidth(false));
+                    builder.assertColor = EditorGUILayout.ColorField("Assert Color", builder.assertColor, GUILayout.ExpandWidth(false));
+                    builder.exceptionColor = EditorGUILayout.ColorField("Exception Color", builder.exceptionColor, GUILayout.ExpandWidth(false));
+                    builder.stackTraceColor = EditorGUILayout.ColorField("Stack Trace Color", builder.stackTraceColor, GUILayout.ExpandWidth(false));
+                }
+
+                EditorGUILayout.Separator();
+
+                scrollPos = GUILayout.BeginScrollView(scrollPos, textStyle, GUILayout.ExpandWidth(true), GUILayout.Height(300));
+
+                foreach (var log in builder.BuildLogs)
+                {
+                    string message = log.FormatLog(
+                                            builder.logColor,
+                                            builder.warnningColor,
+                                            builder.errorColor,
+                                            builder.assertColor,
+                                            builder.exceptionColor,
+                                            builder.stackTraceColor
+                                        );
+
+                    GUILayout.Label(message, labelStyle);
+                    GUILayout.Space(20);
+                }
+
+                GUILayout.EndScrollView();
+
+                GUILayout.Space(5);
+
+                if (GUILayout.Button("Clear Logs"))
+                    builder.BuildLogs.Clear();
+            }
         }
 
+        
         private string[] GetAllCurrentScenes() 
         {
             List<string> scenes = new List<string>();

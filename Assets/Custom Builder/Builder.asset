@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6dca12510259b394baa388ab8b46d867, type: 3}
   m_Name: Builder
   m_EditorClassIdentifier: 
-  ProjectName: ' Capybara Crossing'
+  ProjectName: Kiki-En-Equilibrio(CHEATS)
   ReleaseBuilds:
   - {fileID: 11400000, guid: 10f62d3b44cdf184dac4f1f716eaf28c, type: 2}
   - {fileID: 11400000, guid: f732fa8f5f100cc4a9358cef0ae51cb7, type: 2}
@@ -35,3 +35,9 @@ MonoBehaviour:
   useGlobalDefineSymbols: 1
   globalDefineSymbols:
   - CHEATS
+  logColor: {r: 1, g: 1, b: 1, a: 1}
+  warnningColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  errorColor: {r: 1, g: 0, b: 0, a: 1}
+  assertColor: {r: 1, g: 0.65517235, b: 0.028, a: 2}
+  exceptionColor: {r: 0.8871865, g: 0, b: 1, a: 1}
+  stackTraceColor: {r: 0, g: 0.5415592, b: 1, a: 1}
